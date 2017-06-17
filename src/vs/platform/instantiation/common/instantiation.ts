@@ -164,14 +164,15 @@ export interface IInstantiationService {
 	createChild(services: ServiceCollection): IInstantiationService;
 }
 
+/**
+ * Identifies a service of type T
+ */
+export type IServiceIdentifierType<T> = { (...args: any[]): void; type: T; };
 
 /**
  * Identifies a service of type T
  */
-export interface ServiceIdentifier<T> {
-	(...args: any[]): void;
-	type: T;
-}
+export interface ServiceIdentifier<T> extends IServiceIdentifierType<T> { }
 
 function storeServiceDependency(id: Function, target: Function, index: number, optional: boolean): void {
 	if (target[_util.DI_TARGET] === target) {
@@ -185,7 +186,7 @@ function storeServiceDependency(id: Function, target: Function, index: number, o
 /**
  * A *only* valid way to create a {{ServiceIdentifier}}.
  */
-export function createDecorator<T>(serviceId: string): { (...args: any[]): void; type: T; } {
+export function createDecorator<T>(serviceId: string): IServiceIdentifierType<T> {
 
 	if (_util.serviceIds.has(serviceId)) {
 		return _util.serviceIds.get(serviceId);
